@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - master
-      - beta
     paths:
       - 'libs/**'
       - "**.csproj"
@@ -77,8 +76,8 @@ jobs:
               <version>${{ needs.generate-build-number.outputs.version }}</version>
               <title>(Official) R.E.P.O Mod Library</title>
               <readme>README.md</readme>
-              <authors>Lillious, .Zer0</authors>
-              <owners>Lillious, .Zer0</owners>
+              <authors>Lillious, .Zer0, Ruinvyrd</authors>
+              <owners>Lillious, .Zer0, Ruinvyrd</owners>
               <requireLicenseAcceptance>false</requireLicenseAcceptance>
               <license type="expression">Apache-2.0</license>
               <description>The official mod library for the game R.E.P.O</description>
@@ -92,6 +91,7 @@ jobs:
             <files>
               <file src="bin\Release\Repo_Library.dll" target="lib"/>
               <file src="bin\Release\Assembly-CSharp.dll" target="lib"/>
+              <file src="bin\Release\MelonLoader.dll" target="lib"/>
               <file src="bin\Release\UnityEngine.CoreModule.dll" target="lib"/>
               <file src="bin\Release\UnityEngine.dll" target="lib"/>
               <file src="bin\Release\Unity.InputSystem.dll" target="lib"/>
@@ -143,8 +143,8 @@ jobs:
           
       - name: Set up Git 🛠️
         run: |
-          git config --global user.email "logan.brown@tylertech.com"
-          git config --global user.name "Logan Brown"
+          git config --global user.email "6582364+reashetyrr@users.noreply.github.com"
+          git config --global user.name "reashetyrr"
 
       - name: Create GitHub Release 🚀
         uses: softprops/action-gh-release@v2
