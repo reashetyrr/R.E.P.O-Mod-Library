@@ -118,6 +118,20 @@ namespace Repo_Library
             // Everything has been initialized
             SetInGame(true);
         }
+
+        private static readonly FieldInfo DollarValueCurrentField = typeof(ValuableObject).GetField(
+            "dollarValueCurrent",
+            BindingFlags.Instance | BindingFlags.NonPublic
+        );
+
+        public static float GetDollarValue(ValuableObject valuable)
+        {
+            if (valuable == null || DollarValueCurrentField == null)
+                return 0f;
+
+            return (float)DollarValueCurrentField.GetValue(valuable);
+        }
+
         private IEnumerator MonitorItems(GameObject[] items)
         {
             if (items == null || items.Length == 0)
@@ -132,7 +146,8 @@ namespace Repo_Library
             {
                 if (item != null)
                 {
-                    float initialValue = item.GetComponent<ValuableObject>().dollarValueCurrent;
+                    ValuableObject _item = item.GetComponent<ValuableObject>();
+                    float initialValue = GetDollarValue(_item);
                     itemData[item] = (item.name, initialValue);
                 }
             }
@@ -153,7 +168,8 @@ namespace Repo_Library
                         continue;
                     }
 
-                    float currentValue = item.GetComponent<ValuableObject>().dollarValueCurrent;
+                    ValuableObject _item = item.GetComponent<ValuableObject>();
+                    float currentValue = GetDollarValue(_item);
                     if (!Mathf.Approximately(currentValue, kvp.Value.lastValue)) // Check for change
                     {
                         damagedItems.Add(item);
@@ -164,7 +180,8 @@ namespace Repo_Library
                 foreach (var damagedItem in damagedItems)
                 {
                     OnItemDamaged?.Invoke(damagedItem);
-                    itemData[damagedItem] = (itemData[damagedItem].name, damagedItem.GetComponent<ValuableObject>().dollarValueCurrent); // Update last known value
+                    ValuableObject _item = damagedItem.GetComponent<ValuableObject>();
+                    itemData[damagedItem] = (itemData[damagedItem].name, GetDollarValue(_item)); // Update last known value
                 }
 
                 foreach (var destroyedItem in destroyedItems)
@@ -261,35 +278,10 @@ namespace Repo_Library
                 SetInLobby(false);
             }
 
-            // Check if the player is in the shop
-            if (runManager.levelCurrent == runManager.levelShop)
-            {
-                SetInShop(true);
-            }
-            else
-            {
-                SetInShop(false);
-            }
-
-            // Check if the player is in the arena
-            if (runManager.levelCurrent == runManager.levelArena)
-            {
-                SetInArena(true);
-            }
-            else
-            {
-                SetInArena(false);
-            }
-
-            if (runManager.levelCurrent == runManager.levelLobby)
-            {
-                SetInTruckLobby(true);
-            }
-            else
-            {
-                SetInTruckLobby(false);
-            }
-
+            SetInShop(SemiFunc.RunIsShop());
+            SetInArena(SemiFunc.RunIsArena());
+            SetInTruckLobby(SemiFunc.RunIsLobby());
+            
             // Checks if the player is in game
             if (!SharedSceneData.Menus.Contains(runManager.levelCurrent) && sceneName != "Reload")
             {
@@ -570,9 +562,9 @@ namespace Repo_Library
         {
             return WindowManager.instance;
         }
-        public MenuController GetMenuController()
+        public MenuManager GetMenuManager()
         {
-            return MenuController.instance;
+            return MenuManager.instance;
         }
         public LightManager GetLightManager()
         {
@@ -823,7 +815,7 @@ namespace Repo_Library
         // Send a message as a player
         public void SendMessage(PlayerAvatar playerAvatar, string message)
         {
-            playerAvatar.ChatMessageSend(message, false);
+            playerAvatar.ChatMessageSendRPC(message, false);
         }
 
         // Check if the game is multiplayer
@@ -841,7 +833,7 @@ namespace Repo_Library
         // Player Tumble
         public void PlayerTumble(PlayerAvatar playerAvatar)
         {
-            playerAvatar.tumble.TumbleSet(true, false);
+            playerAvatar.TumbleStart();
         }
 
         // Player Tumble All
@@ -850,7 +842,7 @@ namespace Repo_Library
             PlayerAvatar[] players = GetAllPlayers().ToArray();
             foreach (PlayerAvatar player in players)
             {
-                player.tumble.TumbleSet(true, false);
+                player.TumbleStart();
             }
         }
 
@@ -1004,7 +996,7 @@ namespace Repo_Library
         // Load game
         public void LoadGame(string filename)
         {
-            StatsManager.instance.LoadGame(filename);
+            StatsManager.instance.LoadGame(filename, new List<string>());
         }
 
         // Update which player has the crown
