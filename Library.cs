@@ -11,7 +11,7 @@ using UnityEngine.Events;
 using System;
 using System.Collections;
 
-[assembly: MelonInfo(typeof(Library), "R.E.P.O Mod Library", "1.0.0", "Lillious & .Zer0")]
+[assembly: MelonInfo(typeof(Library), "R.E.P.O Mod Library", "1.1.0", "Lillious, .Zer0 & Ruinvyrd")]
 [assembly: MelonGame("semiwork", "REPO")]
 
 namespace Repo_Library
