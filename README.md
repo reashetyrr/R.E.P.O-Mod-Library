@@ -313,3 +313,5 @@ public override void OnInitializeMelon()
 
 ## Credits
 Created by [Lillious](https://github.com/Lillious) & [.Zer0](https://github.com/Elyriand21)
+
+Maintained by [Ruinvyrd](https://github.com/reashetyrr)
